@@ -1,0 +1,21 @@
+Here’s a sample SQL project idea tailored for an education platform, complete with a dataset link and 20 questions (10 easy, 5 medium, and 5 hard):
+Project Overview
+Title: Student Performance Analysis Objective: Analyze student performance data to derive insights about academic trends, strengths, and areas for improvement. Dataset: You can use the Student Performance Dataset from Kaggle. It contains information about students' demographics, academic performance, and other related factors.
+Table name is "Testfile" . It has columns as follows :
+Column name : gender , datatype : text
+Column name : NationalITy , datatype : text
+Column name : PlaceofBirth , datatype : text
+Column name : StageID , datatype : text
+Column name : GradeID , datatype : text
+Column name : SectionID , datatype : text
+Column name : Topic , datatype : text
+Column name : Semester , datatype : text
+Column name : raisedhands , datatype : numeric
+Column name : VisITedResources , datatype : numeric
+Column name : AnnouncementsView , datatype : numeric
+Column name : Discussion , datatype : numeric
+Column name : ParentAnsweringSurvey , datatype : text
+Column name : ParentschoolSatisfaction , datatype : text
+Column name : StudentAbsenceDays , datatype : text
+Column name : Class , datatype : text
+My compiler is MySQL .
