@@ -63,7 +63,7 @@ The project uses a table named `Testfile` with the following columns:
 The following queries are divided into three levels of difficulty: **Easy**, **Medium**, and **Hard**.
 
 ### Easy Queries (Q1 - Q10)
-
+### Easy Queries (Q1 - Q10)
 1. **Retrieve all student records from the dataset.**
    ```sql
    SELECT * FROM Testfile;
@@ -91,6 +91,14 @@ The following queries are divided into three levels of difficulty: **Easy**, **M
 9. **Find the maximum value in the VisITedResources column.**
    ```sql
    SELECT MAX(VisITedResources) AS max_resources FROM Testfile;
-10. **Count how many students are in each Class.**
+10.  **Count how many students are in each Class.**
    ```sql
    SELECT Class, COUNT(*) AS count FROM Testfile GROUP BY Class;
+11.  **Count how many students are in each Class.**
+   ```sql
+   SELECT Class, COUNT(*) AS count FROM Testfile GROUP BY Class;
+
+
+
+
+   
