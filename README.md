@@ -113,216 +113,65 @@ SELECT MAX(VisITedResources) AS max_resources FROM Testfile;
 ```sql
 SELECT Class, COUNT(*) AS count FROM Testfile GROUP BY Class;
 ```
-11. Identify the least selling product in each country for each year based on total units sold.
+### Medium Queries (Q11 - Q15)
+
+11. Find classes that have more than 20 students.
 ```sql	
-WITH product_rank AS(
-    SELECT 
-        st.country,
-        p.product_name,
-        SUM(s.quantity) AS total_qty_sold,
-        RANK() OVER(PARTITION BY st.country ORDER BY SUM(s.quantity)) AS least_sold_product
-    FROM sales AS s
-    JOIN stores AS st
-    ON s.store_id = st.store_id
-    JOIN products AS p
-    ON s.product_id = p.product_id
-    GROUP BY 1, 2
-)
-SELECT * FROM product_rank WHERE least_sold_product = 1;
+SELECT Class, COUNT(*) AS count FROM Testfile GROUP BY Class HAVING count > 20;
 ```
-12. Calculate how many warranty claims were filed within 180 days of a product sale.
+12. Compute the average raisedhands for each combination of NationalITy and gender.
 ```sql
-SELECT 
-    COUNT(*) AS total_warranty_claimed
-FROM warranty AS w
-LEFT JOIN sales AS s
-ON w.sale_id = s.sale_id
-WHERE w.claim_date - s.sale_date <= 180;
+SELECT NationalITy, gender, AVG(raisedhands) AS avg_raisedhands FROM Testfile GROUP BY NationalITy, gender;
 ```
-13. Determine how many warranty claims were filed for products launched in the last two years.
+13. Retrieve rows where AnnouncementsView is greater than 5 and Discussion is less than 10.
 ```sql
-SELECT
-    p.product_name,
-    COUNT(w.claim_id) as total_no_claim,
-    COUNT(s.sale_id) as total_no_sales
-FROM warranty AS w
-RIGHT JOIN sales AS s
-ON w.sale_id = s.sale_id
-JOIN products AS p
-ON p.product_id = s.product_id
-WHERE launch_date >= CURRENT_DATE - INTERVAL '2 years'
-GROUP BY 1
-HAVING COUNT(w.claim_id) > 0;
+SELECT *
+FROM Testfile
+WHERE AnnouncementsView > 5
+  AND Discussion < 10;
 ```
-14. List the months in the last three years where sates exceeded units in the United States.
+14. Add a column called Performance that shows 'High' if raisedhands is above 50 and 'Low' otherwise.
 ```sql
-SELECT
-    TO_CHAR(sale_date, 'MM-YYYY') AS months,
-    SUM(s.quantity) AS no_of_units_sold
-FROM sales AS s
-JOIN stores AS st
-ON s.store_id = st.store_id
-WHERE country = 'United States' 
-  AND s.sale_date >= CURRENT_DATE - INTERVAL '3 years'
-GROUP BY 1
-HAVING SUM(s.quantity) > 5000;
+SELECT *, CASE WHEN raisedhands > 50 THEN 'High' ELSE 'Low' END AS Performance FROM Testfile;
 ```
-15. Identify the product category with the most warranty claims filed in the last two years.
+15. For each NationalITy, list the top 3 rows with the highest Discussion scores (requires MySQL 8.0+ for window functions).
 ```sql
-SELECT 
-    c.category_name,
-    COUNT(w.claim_id) AS total_claims
-FROM warranty AS w
-LEFT JOIN sales AS s
-ON w.sale_id = s.sale_id
-JOIN products AS p
-ON p.product_id = s.product_id
-JOIN category AS c
-ON c.category_id = p.category_id
-WHERE w.claim_date >= CURRENT_DATE - INTERVAL '2 years'
-GROUP BY 1
-ORDER BY 2 DESC;
+SELECT * FROM ( SELECT *, ROW_NUMBER() OVER (PARTITION BY NationalITy ORDER BY Discussion DESC) AS rn FROM Testfile ) AS sub WHERE rn <= 3;
 ```
-16. Determine the percentage chance of receiving warranty claims after each purchase for each country.
-```sql
-SELECT
-    country,
-    total_units,
-    total_claim,
-    COALESCE((total_claim::NUMERIC / total_units::NUMERIC) * 100,0) AS percentage_of_risk
-FROM
-(
-    SELECT
-        st.country,
-        SUM(s.quantity) AS total_units,
-        COUNT(w.claim_id) AS total_claim
-    FROM sales AS s
-    JOIN stores AS st
-    ON st.store_id = s.store_id
-    LEFT JOIN warranty AS w
-    ON w.sale_id = s.sale_id
-    GROUP BY 1
-) tr
-ORDER BY 4 DESC;
-```
-17. Analyze the year-by-year growth ratio for each store.
-```sql
-WITH yearly_sales AS
-(
-    SELECT
-        S.store_id,
-        st.store_name,
-        EXTRACT(YEAR FROM sale_date) AS year_of_sale,
-        SUM(p.price * s.quantity) AS total_sale
-    FROM sales AS s
-    JOIN products AS p
-    ON s.product_id = p.product_id
-    JOIN stores AS st
-    ON st.store_id = s.store_id
-    GROUP BY 1, 2, 3
-    ORDER BY 1, 2, 3
-),
+### Hard Queries (Q16 - Q20)
 
-growth_ratio AS
-(
-    SELECT
-        store_name,
-        year_of_sale,
-        LAG(total_sale, 1) OVER(PARTITION BY store_name ORDER BY year_of_sale) AS last_year_sale,
-        total_sale AS current_year_sale
-    FROM yearly_sales
-)
-
-SELECT
-    store_name,
-    year_of_sale,
-    last_year_sale,
-    current_year_sale,
-    ROUND((current_year_sale - last_year_sale)::NUMERIC / last_year_sale::NUMERIC * 100, 2) AS growth_ratio_yoy
-FROM growth_ratio
-WHERE last_year_sale IS NOT NULL;
+16. Create a pivot-like table that shows the number of students by gender for each Class.
+```sql
+SELECT Class, SUM(CASE WHEN gender = 'Male' THEN 1 ELSE 0 END) AS Male_Count, SUM(CASE WHEN gender = 'Female' THEN 1 ELSE 0 END) AS Female_Count FROM Testfile GROUP BY Class;
+```
+17. Compare students within the same NationalITy and PlaceofBirth by joining the table to itself; list pairs where one student has a higher raisedhands value than the other.
+```sql
+SELECT a.gender AS Gender_A, a.raisedhands AS RaisedHands_A, b.gender AS Gender_B, b.raisedhands AS RaisedHands_B, a.NationalITy, a.PlaceofBirth FROM Testfile a JOIN Testfile b ON a.NationalITy = b.NationalITy AND a.PlaceofBirth = b.PlaceofBirth WHERE a.raisedhands > b.raisedhands;
 ```
 
-18. Calculate the correlation between product price and warranty claims for products sold in the tast five years, segmented by price range.
+18. For each row, calculate the ratio of raisedhands to VisITedResources, while avoiding division by zero.
 ```sql
-SELECT 
-    CASE
-        WHEN p.price < 500 THEN 'Basic'
-        WHEN p.price BETWEEN 500 AND 1000 THEN 'Mid-range'
-        ELSE 'Premium'
-    END AS price_segment,
-    COUNT(w.claim_id) AS total_claim
-FROM warranty AS w
-LEFT JOIN sales AS s
-ON s.sale_id = w.sale_id
-JOIN products AS p
-ON p.product_id = s.product_id
-WHERE claim_date >= CURRENT_DATE - INTERVAL '5 years'
-GROUP BY 1
-ORDER BY 2 DESC;
+SELECT *, 
+       CASE 
+         WHEN VisITedResources = 0 THEN NULL 
+         ELSE raisedhands / VisITedResources 
+       END AS Hands_Resources_Ratio
+FROM Testfile;
 ```
-19. Identify the store with the highest percentage of "Completed" claims relative to total claims filed.
+19. Rank students by Discussion scores within each NationalITy using window functions (MySQL 8.0+ required).
     
 ```sql
-WITH completed AS
-(
-    SELECT
-        s.store_id,
-        COUNT(w.claim_id) AS completed
-    FROM sales AS s
-    RIGHT JOIN warranty AS w
-    ON s.sale_id = w.sale_id
-    WHERE w.repair_status = 'Completed'
-    GROUP BY 1
-), 
-
-total_claim AS
-(
-    SELECT
-        s.store_id,
-        COUNT(w.claim_id) AS total_claim
-    FROM sales AS s
-    RIGHT JOIN warranty AS w
-    ON s.sale_id = w.sale_id
-    GROUP BY 1
-)
-
-SELECT 
-    tc.store_id,
-	st.store_name,
-    tc.total_claim,
-    c.completed,
-    ROUND(c.completed::NUMERIC / tc.total_claim::NUMERIC * 100, 2) AS percentage_of_completed
-FROM completed AS c
-JOIN total_claim AS tc
-ON c.store_id = tc.store_id
-JOIN stores AS st
-ON tc.store_id=st.store_id;
+SELECT *,
+       RANK() OVER (PARTITION BY NationalITy ORDER BY Discussion DESC) AS Discussion_Rank
+FROM Testfile;
 ```
 
-20. Write a query to calculate the monthly running total of sales for each store over the past four years and compare trends during this period.
-```sql
-WITH monthly_sales AS
-(
-    SELECT
-        store_id,
-        EXTRACT(YEAR FROM sale_date) AS year,
-        EXTRACT(MONTH FROM sale_date) AS month,
-        SUM(p.price * s.quantity) AS total_profit
-    FROM sales AS s
-    JOIN products AS p
-    ON s.product_id = p.product_id
-    GROUP BY 1, 2, 3
-    ORDER BY 1, 2, 3
-)
+20. Calculate a weighted score for each student using the formula
+(raisedhands * 0.4 + AnnouncementsView * 0.3 + Discussion * 0.3)
+and rank students by this score.
 
-SELECT
-    store_id, 
-    year, 
-    month, 
-    total_profit, 
-    SUM(total_profit) OVER(PARTITION BY store_id ORDER BY year, month) AS running_total
-FROM monthly_sales;
+```sql
+SELECT *, (raisedhands * 0.4 + AnnouncementsView * 0.3 + Discussion * 0.3) AS WeightedScore, RANK() OVER (ORDER BY (raisedhands * 0.4 + AnnouncementsView * 0.3 + Discussion * 0.3) DESC) AS ScoreRank FROM Testfile;
 ```
 ---
 
