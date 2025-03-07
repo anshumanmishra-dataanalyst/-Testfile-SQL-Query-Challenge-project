@@ -95,7 +95,8 @@ The following queries are divided into three levels of difficulty: **Easy**, **M
    ```sql
    SELECT Class, COUNT(*) AS count FROM Testfile GROUP BY Class;
 
-1.  **Retrieve all student records from the dataset.**
+Q1: Retrieve all student records from the dataset.**  
+   **A1:**
    ```sql
    SELECT * FROM Testfile;
 
