@@ -67,3 +67,6 @@ The following queries are divided into three levels of difficulty: **Easy**, **M
 1. **Retrieve all student records from the dataset.**
    ```sql
    SELECT * FROM Testfile;
+2. **List all distinct values in the gender column.**
+   ```sql
+   SELECT DISTINCT gender FROM Testfile;
