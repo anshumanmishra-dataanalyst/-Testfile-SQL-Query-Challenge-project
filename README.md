@@ -70,3 +70,27 @@ The following queries are divided into three levels of difficulty: **Easy**, **M
 2. **List all distinct values in the gender column.**
    ```sql
    SELECT DISTINCT gender FROM Testfile;
+3. **Count the total number of rows in the table.**
+   ```sql
+   SELECT COUNT(*) AS total_rows FROM Testfile;
+4. **Count the number of students for each gender.**
+   ```sql
+   SELECT gender, COUNT(*) AS count FROM Testfile GROUP BY gender;
+5. **Calculate the average number of raisedhands.**
+   ```sql
+   SELECT AVG(raisedhands) AS avg_raisedhands FROM Testfile;
+6. **Retrieve all rows where raisedhands is greater than 50.**
+   ```sql
+   SELECT * FROM Testfile WHERE raisedhands > 50;
+7. **Show only gender, NationalITy, and Class.**
+   ```sql
+   SELECT gender, NationalITy, Class FROM Testfile;
+8. **List all rows ordered by raisedhands in descending order.**
+   ```sql
+   SELECT * FROM Testfile ORDER BY raisedhands DESC;
+9. **Find the maximum value in the VisITedResources column.**
+   ```sql
+   SELECT MAX(VisITedResources) AS max_resources FROM Testfile;
+10. **Count how many students are in each Class.**
+   ```sql
+   SELECT Class, COUNT(*) AS count FROM Testfile GROUP BY Class;
