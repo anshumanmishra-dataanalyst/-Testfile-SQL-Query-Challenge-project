@@ -49,7 +49,4 @@ The queries are divided into three difficulty levels: **Easy (Q1–Q10)**, **Med
 ```sql
 SELECT * FROM Testfile;
 
-**#### Q2: List all distinct values in the gender column.
-**A2:****
-```sql
-SELECT DISTINCT gender FROM Testfile;
+
