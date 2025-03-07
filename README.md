@@ -95,7 +95,11 @@ The following queries are divided into three levels of difficulty: **Easy**, **M
    ```sql
    SELECT Class, COUNT(*) AS count FROM Testfile GROUP BY Class;
 
-11.**Count how many students are in each Class.**
+10.  ****Count how many students are in each Class.****
+   ```sql
+   SELECT Class, COUNT(*) AS count FROM Testfile GROUP BY Class;
+
+11.  **Count how many students are in each Class.**
    ```sql
    SELECT Class, COUNT(*) AS count FROM Testfile GROUP BY Class;
 
